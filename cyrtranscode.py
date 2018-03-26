@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# ver 0.01
+
 import sys
 import encodings
 import regex
