@@ -11,8 +11,6 @@ import encodings
 class Transcode:
 
     def transcode(self, text, enc1='auto', enc2='auto'):
-#        encodings = __import__('encodings')
-#        regex = __import__('regex')
         if text.strip() == '':
             return('','Null')
         else:
@@ -134,11 +132,12 @@ class Transcode:
                 # RESULT
                 if rating_max < rating:
                     rating_max = rating
-                    string_max.append(string.strip())
+                    string_max.append(string)
             result_string = string_max[len(string_max)-1]
             result_string_index = strings_original.index(result_string)
             result_string_encs = encs_combos[result_string_index]
-            return(result_string,result_string_encs)
+            return(result_string.strip(),result_string_encs)
+
 
 
 
