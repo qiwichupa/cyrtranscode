@@ -1,26 +1,54 @@
 #!/usr/bin/env python3
-# ver 0.02
+# Cyrtranscode
+# v1.0
+# by Sergey Pavlov aka Qiwichupa
+
 
 import sys
 import argparse
+import encodings
+import regex
 
 class Transcode:
 
-    def transcode(self, text):
-        encodings = __import__('encodings')
-        regex = __import__('regex')
+    def transcode(self, text, enc1='auto', enc2='auto'):
         if text.strip() == '':
-            return('')
+            return('','Null')
         else:
             encs = encodings.aliases.aliases.items()
             strings = []
-            for i, enc1 in encs:
-                for i, enc2 in encs:
-                    try:
-                        strings.append(text.encode(enc1).decode(enc2))
-                    except:
-                        pass
-    
+            encs_combos = []
+            if enc1 == 'auto' and enc2 == 'auto': 
+                for i, enc1 in encs:
+                    for i, enc2 in encs:
+                        try:
+                            strings.append(text.encode(enc1).decode(enc2))
+                            encs_combos.append(enc1 + '|' + enc2)
+                        except:
+                            pass
+            elif enc1 != 'auto' and enc2 != 'auto':
+                try:
+                    strings.append(text.encode(enc1).decode(enc2))
+                    encs_combos.append(enc1 + '|' + enc2)
+                except:
+                    pass
+            else:
+                if enc1 == 'auto':
+                    for i, enc1 in encs:
+                        try:
+                            strings.append(text.encode(enc1).decode(enc2))
+                            encs_combos.append(enc1 + '|' + enc2)
+                        except:
+                            pass
+                if enc2 == 'auto':
+                    for i, enc2 in encs:
+                        try:
+                            strings.append(text.encode(enc1).decode(enc2))
+                            encs_combos.append(enc1 + '|' + enc2)
+                        except:
+                            pass
+
+            strings_original = strings
             alph_str =        'абвгдеёжзийклмнопрстуфхцчшщыэюя'
             alph_str_full =   'абвгдеёжзийклмнопрстуфхцчшщыэюяьъ'
             alph_str_up = alph_str.upper()
@@ -42,32 +70,32 @@ class Transcode:
             words_begin_with = words_begin_with_str.split() + words_begin_with_str.title().split()
             strings = list(set(strings))
             strings.sort()
-    
+
             rating_max = 0
             string_max = []
             for string in strings:
                 rating = 0
                 adds = []
-    
+
                 # RATING+
                 for letter in alph:
                     if letter in string:
                         rating += 2  # list(string).count(letter)
-    
+
                 for word in dictionary:
                     if " {} ".format(word) in string:
                         rating += 50
-    
+
                 if len(string.split()) > 1:
                     rating += 50
-    
+
                 for prefix in words_begin_with:
                     prefix_pattern = '\s' + prefix + '.+\s'
                     add_rating = len(regex.findall(prefix_pattern, string, overlapped=True)) * 10
                     if add_rating > 0:
                         rating += add_rating
                         adds += (prefix_pattern, add_rating)
-    
+
                 rus_letters = '[' + alph_str_up + ']{0,1}[' + alph_str_full + ']+'
                 rus_word_pattern = (
                     '^'  + rus_letters + '[,\.:;]{0,1}' '\s'
@@ -81,12 +109,11 @@ class Transcode:
                 if add_rating > 0:
                     rating += add_rating
                     adds += (rus_words, add_rating)
-    
+
                 # RATING-
                 if string[:2] == "яю" or string.lstrip()[:2] == "юя":
-                    #string = string[2:]
                     rating -= 50
-    
+
                 rus_letters_again = '[' + alph_str_up + ']{0,1}[' + alph_str_full + ']+'
                 weird_rus_word_pattern = (
                     '^' +  rus_letters_again + '[^a-zA-Zа-яА-Я0-9\(\),\.:;\s]+'  '[^\s]*' '\s'
@@ -102,17 +129,17 @@ class Transcode:
                 if add_rating < 0:
                     rating += add_rating
                     adds += (weird_rus_words, add_rating)
-    
+
                 # RESULT
                 if rating_max < rating:
                     rating_max = rating
-                    string_max.append(string.strip())
-                    #print(string)
-                    #print(rating)
-                    #print(adds)
-                    #print()
-            return(string_max[len(string_max)-1])
-    
+                    string_max.append(string)
+            result_string = string_max[len(string_max)-1]
+            result_string_index = strings_original.index(result_string)
+            result_string_encs = encs_combos[result_string_index]
+            return(result_string.strip(),result_string_encs)
+
+
 
 
 def out(line):
@@ -151,17 +178,19 @@ args = parser.parse_args()
 
 flush_outfile = True
 
-t = Transcode()
+tr = Transcode()
 
 if args.input:
     with open(args.input, 'r', encoding='utf-8') as input_file:
         text = input_file.readlines()
         for line in text:
-            out(t.transcode(line))
+            result_line,i = tr.transcode(line)
+            out(result_line)
 elif args.pipe:
 #    if select.select([sys.stdin, ], [], [], 0.0)[0]:  # if stdin has data
     for line in sys.stdin:
-        out(t.transcode(line))
+        result_line,i = tr.transcode(line)
+        out(result_line)
     else:
         pass
 elif args.t:
@@ -180,8 +209,10 @@ elif args.t:
                    '''
     for line in test_strings.splitlines():
         print(line.strip())
-        out(t.transcode(line))
+        (result_line, encs) = tr.transcode(line)
+        out(result_line)
         print()
 else:
     text = args.string
-    out(t.transcode(text))
+    result_line,i = tr.transcode(text)
+    out(result_line)
