@@ -1,1 +1,2 @@
 wxwidgets>=1.0.5
+regex>=2021.8.21
