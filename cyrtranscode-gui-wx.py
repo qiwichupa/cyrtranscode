@@ -71,8 +71,8 @@ class MainWindow(wx.Frame):
         self.text_output.Clear()
         text = self.text_input.GetValue()
         lines = text.splitlines()
-        enc_in = self.enc_in_list_last_state
-        enc_out = self.enc_out_list_last_state
+        enc_in = self.enc_in_list.GetStringSelection()
+        enc_out = self.enc_out_list.GetStringSelection()
         print(enc_in, enc_out)
         for line in lines:
             (string, codepage) = trans.transcode(line, enc_in, enc_out)
