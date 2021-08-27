@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-# Cyrtranscoder GUI Edition
-# v1.0
+# Cyrtranscode GUI-wx Edition
 # by Sergey Pavlov aka Qiwichupa
 
 import encodings
