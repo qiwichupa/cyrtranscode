@@ -1,3 +1,2 @@
 regex~=2021.8.21
-wxwidgets~=1.0.5
 wxPython~=4.1.1
