@@ -141,20 +141,20 @@ class Transcode:
 
 
 
-
-def out(line):
-    global flush_outfile
-    if args.output and flush_outfile:
-        with open(args.output, 'w', encoding='utf-8') as f:
-            f.write(line + '\n')
-            f.close()
-        flush_outfile = False
-    elif args.output and flush_outfile == False:
-        with open(args.output, 'a', encoding='utf-8') as f:
-            f.write(line + '\n')
-            f.close()
-    else:
-        print(line)
+if __name__ == '__main__':
+    def out(line):
+        global flush_outfile
+        if args.output and flush_outfile:
+            with open(args.output, 'w', encoding='utf-8') as f:
+                f.write(line + '\n')
+                f.close()
+            flush_outfile = False
+        elif args.output and flush_outfile == False:
+            with open(args.output, 'a', encoding='utf-8') as f:
+                f.write(line + '\n')
+                f.close()
+        else:
+            print(line)
 
 
 
@@ -162,57 +162,57 @@ def out(line):
 # MAIN
 
 
-try:
-    sys.argv[1]
-except:
-    sys.exit(sys.argv[0] + ":\n    -h Читать описание")
+    try:
+        sys.argv[1]
+    except:
+        sys.exit(sys.argv[0] + ":\n    -h Читать описание")
 
-parser = argparse.ArgumentParser(prog='cyrtranscoder', description='Утилита пытается распознать битую кодировку')
-parser.add_argument('-o', '--output', type=str, metavar='FILE', help="вывод в файл  (UTF-8)")
-input_group = parser.add_mutually_exclusive_group()
-input_group.add_argument('-i', '--input', type=str, metavar='FILE', help="чтение из файла (UTF-8)")
-input_group.add_argument('-s', '--string', type=str, metavar='STRING', help='строка для распознавания')
-input_group.add_argument('-p', '--pipe',  help='получать через pipe', action="store_true")
-input_group.add_argument('-t',  help='тест распознавания', action="store_true")
-args = parser.parse_args()
+    parser = argparse.ArgumentParser(prog='cyrtranscoder', description='Утилита пытается распознать битую кодировку')
+    parser.add_argument('-o', '--output', type=str, metavar='FILE', help="вывод в файл  (UTF-8)")
+    input_group = parser.add_mutually_exclusive_group()
+    input_group.add_argument('-i', '--input', type=str, metavar='FILE', help="чтение из файла (UTF-8)")
+    input_group.add_argument('-s', '--string', type=str, metavar='STRING', help='строка для распознавания')
+    input_group.add_argument('-p', '--pipe',  help='получать через pipe', action="store_true")
+    input_group.add_argument('-t',  help='тест распознавания', action="store_true")
+    args = parser.parse_args()
 
-flush_outfile = True
+    flush_outfile = True
 
-tr = Transcode()
+    tr = Transcode()
 
-if args.input:
-    with open(args.input, 'r', encoding='utf-8') as input_file:
-        text = input_file.readlines()
-        for line in text:
+    if args.input:
+        with open(args.input, 'r', encoding='utf-8') as input_file:
+            text = input_file.readlines()
+            for line in text:
+                result_line,i = tr.transcode(line)
+                out(result_line)
+    elif args.pipe:
+    #    if select.select([sys.stdin, ], [], [], 0.0)[0]:  # if stdin has data
+        for line in sys.stdin:
             result_line,i = tr.transcode(line)
             out(result_line)
-elif args.pipe:
-#    if select.select([sys.stdin, ], [], [], 0.0)[0]:  # if stdin has data
-    for line in sys.stdin:
-        result_line,i = tr.transcode(line)
-        out(result_line)
+        else:
+            pass
+    elif args.t:
+        test_strings = '''цНПНД:йПЮЯМНЪПЯЙ рЕКЕТНМ: 
+                          дПСЦНИ БХД ЯБЪГХ: 
+                          нОХЬХРЕ ОПНАКЕЛС (ЛНФМН ЙПЮРЙН):
+                          ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑЏ Ð¿ÑƒÐ±Ð»Ð¸ÐºÐ °Ñ†Ð¸Ð¸
+                          Ñîîáùåíèå ãîòîâî ê îòïðàâêå ñî ñëåäóþùèì ôàéëîì èëè âëîæåííîé ñâÿçêîé: 041
+                          Ïðèìå÷àíèå: Äëÿ ïðåäîòâðàùåíèÿ çàðàæåíèÿ êîìïüþòåðíûìè âèðóñàìè ïî÷òîâûå ïðîãðàììû ìîãóò çàïðåùàòü îòïðàâëåíèå èëè ïîëó÷åíèå âëîæåííûõ ôàéëîâ. Ïðîâåðüòå ïàðàìåòðû áåçîïàñíîñòè ïî÷òîâîé ïðîãðàììû äëÿ îáðàáîòêè âëîæåíèé.
+                          ЇҐаҐ г¬Ґа жЁп ЇҐаҐ¬Ґ ле 
+                          ñîâåì íå ïîìîãàåò âàø äåêîðäåð! íó êàê òàê?! îòïðàâëÿëà ïèñüìî íà ïðàâèëüíîì ðóññêîì, à ìíå ïðèøåë îòâåò ,÷òî åãî íåâîçìîæíî ïðî÷èòàòü. çàõîæó â ïàïêó "îòïðàâëåííûå", ñìîòðþ - äåéñòâèòåëüíî îòïðàâèñëîñü ïèñüìî íåïîíÿòíåéøèì íàáîðîì ñèìâîëâ. îáðàòèëàñü â ñëóæáó ßíäåêñà, ïåðåïðàâèëè íà âàø ñàéò. è ÷òî æå? - ÍÈ×ÅÃÎ ÍÅ ÄÅÉÑÒÂÓÅÒ!!! íå ïîëó÷àåòñÿ ðàñøèôðîâàòü! âñå êîäèðîêè áûëè ïåðåïðîáîâàíû....ïðîñòî ïî- ÷åëîâå÷åñêè îáèäíî ïîòåðÿòü òðóäû ïîëó÷àñîâîãî ñèäåíèÿ çà êîìïüþòåðîì......
+                          лБФС мЕМШ - нХУЙ рХУЙ
+                          §©§Х§а§в§а§У§а! §Ї§С §Я§а§У§н§Ы §Ф§а§Х §б§в§Ъ§У§Ц§Щ§е 2 §Ь§в§е§д§н§з §Ю§а§Т§Ъ§Э§о§Я§н§з §г §Ь§С§Ю§Ц§в§а§Ы, §У §¬§С§Щ§С§Я§Ъ §д§С§Ь§Ъ§з §д§а§й§Я§а §Я§Ц§д, 7700 §в§е§Т§Э§Ц§Ы/§к§д§е§Ь§С, §Ц§г§Э§Ъ §Я§С§Х§а.
+                          дЮ АКХМ, ЕЫЕ ПЮГ ЦНБНПЧ - АЮАНЙ МЕРС. йНЦДЮ АСДСР - ХГЛЕМЧ
+                          Íåâîçìîæíî èñïîëüçîâàòü ''; ôàéë óæå èñïîëüçóåòñÿ.
+                       '''
+        for line in test_strings.splitlines():
+            print(line.strip())
+            (result_line, encs) = tr.transcode(line)
+            out(result_line)
+            print()
     else:
-        pass
-elif args.t:
-    test_strings = '''цНПНД:йПЮЯМНЪПЯЙ рЕКЕТНМ: 
-                      дПСЦНИ БХД ЯБЪГХ: 
-                      нОХЬХРЕ ОПНАКЕЛС (ЛНФМН ЙПЮРЙН):
-                      ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑЏ Ð¿ÑƒÐ±Ð»Ð¸ÐºÐ °Ñ†Ð¸Ð¸
-                      Ñîîáùåíèå ãîòîâî ê îòïðàâêå ñî ñëåäóþùèì ôàéëîì èëè âëîæåííîé ñâÿçêîé: 041
-                      Ïðèìå÷àíèå: Äëÿ ïðåäîòâðàùåíèÿ çàðàæåíèÿ êîìïüþòåðíûìè âèðóñàìè ïî÷òîâûå ïðîãðàììû ìîãóò çàïðåùàòü îòïðàâëåíèå èëè ïîëó÷åíèå âëîæåííûõ ôàéëîâ. Ïðîâåðüòå ïàðàìåòðû áåçîïàñíîñòè ïî÷òîâîé ïðîãðàììû äëÿ îáðàáîòêè âëîæåíèé.
-                      ЇҐаҐ г¬Ґа жЁп ЇҐаҐ¬Ґ ле 
-                      ñîâåì íå ïîìîãàåò âàø äåêîðäåð! íó êàê òàê?! îòïðàâëÿëà ïèñüìî íà ïðàâèëüíîì ðóññêîì, à ìíå ïðèøåë îòâåò ,÷òî åãî íåâîçìîæíî ïðî÷èòàòü. çàõîæó â ïàïêó "îòïðàâëåííûå", ñìîòðþ - äåéñòâèòåëüíî îòïðàâèñëîñü ïèñüìî íåïîíÿòíåéøèì íàáîðîì ñèìâîëâ. îáðàòèëàñü â ñëóæáó ßíäåêñà, ïåðåïðàâèëè íà âàø ñàéò. è ÷òî æå? - ÍÈ×ÅÃÎ ÍÅ ÄÅÉÑÒÂÓÅÒ!!! íå ïîëó÷àåòñÿ ðàñøèôðîâàòü! âñå êîäèðîêè áûëè ïåðåïðîáîâàíû....ïðîñòî ïî- ÷åëîâå÷åñêè îáèäíî ïîòåðÿòü òðóäû ïîëó÷àñîâîãî ñèäåíèÿ çà êîìïüþòåðîì......
-                      лБФС мЕМШ - нХУЙ рХУЙ
-                      §©§Х§а§в§а§У§а! §Ї§С §Я§а§У§н§Ы §Ф§а§Х §б§в§Ъ§У§Ц§Щ§е 2 §Ь§в§е§д§н§з §Ю§а§Т§Ъ§Э§о§Я§н§з §г §Ь§С§Ю§Ц§в§а§Ы, §У §¬§С§Щ§С§Я§Ъ §д§С§Ь§Ъ§з §д§а§й§Я§а §Я§Ц§д, 7700 §в§е§Т§Э§Ц§Ы/§к§д§е§Ь§С, §Ц§г§Э§Ъ §Я§С§Х§а.
-                      дЮ АКХМ, ЕЫЕ ПЮГ ЦНБНПЧ - АЮАНЙ МЕРС. йНЦДЮ АСДСР - ХГЛЕМЧ
-                      Íåâîçìîæíî èñïîëüçîâàòü ''; ôàéë óæå èñïîëüçóåòñÿ.
-                   '''
-    for line in test_strings.splitlines():
-        print(line.strip())
-        (result_line, encs) = tr.transcode(line)
+        text = args.string
+        result_line,i = tr.transcode(text)
         out(result_line)
-        print()
-else:
-    text = args.string
-    result_line,i = tr.transcode(text)
-    out(result_line)
