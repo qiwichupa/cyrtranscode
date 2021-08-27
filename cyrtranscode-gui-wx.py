@@ -73,7 +73,6 @@ class MainWindow(wx.Frame):
         lines = text.splitlines()
         enc_in = self.enc_in_list.GetStringSelection()
         enc_out = self.enc_out_list.GetStringSelection()
-        print(enc_in, enc_out)
         for line in lines:
             (string, codepage) = trans.transcode(line, enc_in, enc_out)
             if self.show_codepage_checkbox.GetValue():
