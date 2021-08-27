@@ -49,8 +49,7 @@ class MainApplication(ttk.Frame):
         self.trans_button = ttk.Button(self, text='Разобрать кракозябры', command=self.translate)
         self.trans_button.grid(row=3, column=1, columnspan=3)
 
-
-    def lock_encodings(self,v):
+    def lock_encodings(self, event):
         if self.enc_in_list.get() == 'auto':
             self.enc_out_list.config(state=tk.DISABLED)
             self.enc_in_list_last_state = 'auto'
