@@ -18,8 +18,8 @@ class MainWindow(wx.Frame):
         self.text_input  = wx.TextCtrl(self, size=(600, 200), style=wx.TE_MULTILINE | wx.HSCROLL)
         self.text_output = wx.TextCtrl(self, size=(600, 200), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
-        self.enc_in_list  = wx.ComboBox(self, choices=self.get_encs_list(), value='auto')
-        self.enc_out_list = wx.ComboBox(self, choices=self.get_encs_list(), value='auto')
+        self.enc_in_list  = wx.ComboBox(self, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
+        self.enc_out_list = wx.ComboBox(self, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
         self.enc_out_list.Disable()
 
         self.show_codepage_checkbox = wx.CheckBox(self, label='Показывать кодировку')
