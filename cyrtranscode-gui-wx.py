@@ -13,11 +13,11 @@ class MainWindow(wx.Frame):
     enc_out_list_last_state = 'auto'
 
     def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
+        wx.Frame.__init__(self, parent, title=title, style=wx.DEFAULT_FRAME_STYLE | wx.RESIZE_BORDER)
 
         mainpanel = wx.Panel(self)
-        self.text_input  = wx.TextCtrl(mainpanel, size=(600, 200), style=wx.TE_MULTILINE | wx.HSCROLL)
-        self.text_output = wx.TextCtrl(mainpanel, size=(600, 200), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
+        self.text_input  = wx.TextCtrl(mainpanel, style=wx.TE_MULTILINE | wx.HSCROLL)
+        self.text_output = wx.TextCtrl(mainpanel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
         self.enc_in_list  = wx.ComboBox(mainpanel, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
         self.enc_out_list = wx.ComboBox(mainpanel, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
@@ -36,10 +36,13 @@ class MainWindow(wx.Frame):
         sizer.Add(self.show_codepage_checkbox, pos=(2, 1), flag=wx.RIGHT)
         sizer.Add(self.enc_out_list, pos=(3, 0), flag=wx.LEFT)
         sizer.Add(self.trans_button, pos=(3, 1), flag=wx.RIGHT)
-
+        sizer.AddGrowableCol(0)
+        sizer.AddGrowableRow(0)
+        sizer.AddGrowableRow(1)
         mainpanel.SetSizer(sizer)
         sizer.Fit(self)
-        self.Fit()
+        self.Layout()
+        self.SetMinSize((600, 300))
         self.Show(True)
 
     def change_frame_size(self, width, height):
