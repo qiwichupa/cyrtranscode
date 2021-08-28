@@ -15,15 +15,16 @@ class MainWindow(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self, parent, title=title, style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
 
-        self.text_input  = wx.TextCtrl(self, size=(600, 200), style=wx.TE_MULTILINE | wx.HSCROLL)
-        self.text_output = wx.TextCtrl(self, size=(600, 200), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
+        mainpanel = wx.Panel(self)
+        self.text_input  = wx.TextCtrl(mainpanel, size=(600, 200), style=wx.TE_MULTILINE | wx.HSCROLL)
+        self.text_output = wx.TextCtrl(mainpanel, size=(600, 200), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
-        self.enc_in_list  = wx.ComboBox(self, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
-        self.enc_out_list = wx.ComboBox(self, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
+        self.enc_in_list  = wx.ComboBox(mainpanel, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
+        self.enc_out_list = wx.ComboBox(mainpanel, choices=self.get_encs_list(), value='auto', size=(200,-1), style=wx.CB_READONLY)
         self.enc_out_list.Disable()
 
-        self.show_codepage_checkbox = wx.CheckBox(self, label='Показывать кодировку')
-        self.trans_button = wx.Button(self, label='Разобрать кракозябры')
+        self.show_codepage_checkbox = wx.CheckBox(mainpanel, label='Показывать кодировку')
+        self.trans_button = wx.Button(mainpanel, label='Разобрать кракозябры')
         self.trans_button.Bind(wx.EVT_BUTTON, self.translate)
 
         self.enc_in_list.Bind(wx.EVT_COMBOBOX, self.lock_encodings)
@@ -36,7 +37,7 @@ class MainWindow(wx.Frame):
         sizer.Add(self.enc_out_list, pos=(3, 0), flag=wx.LEFT)
         sizer.Add(self.trans_button, pos=(3, 1), flag=wx.RIGHT)
 
-        self.SetSizer(sizer)
+        mainpanel.SetSizer(sizer)
         sizer.Fit(self)
         self.Fit()
         self.Show(True)
